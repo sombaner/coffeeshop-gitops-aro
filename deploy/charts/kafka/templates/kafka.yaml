@@ -1,0 +1,36 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: coffeeshop-kafka
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+  annotations:
+      argocd.argoproj.io/sync-wave: "1"
+spec:
+  kafka:
+    config:
+      default.replication.factor: 3
+      inter.broker.protocol.version: '3.5'
+      min.insync.replicas: 2
+      num.partitions: {{ .Values.partition_count }}
+      offsets.topic.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      transaction.state.log.replication.factor: 3
+    listeners:
+      - name: plain
+        port: {{ .Values.port.internal }}
+        tls: false
+        type: internal
+      - name: tls
+        port: {{ .Values.port.tls }}
+        tls: true
+        type: internal
+    replicas: 3
+    storage:
+      type: ephemeral
+    version: 3.5.0
+  zookeeper:
+    replicas: 3
+    storage:
+      type: ephemeral

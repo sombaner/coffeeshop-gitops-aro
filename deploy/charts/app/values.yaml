@@ -1,0 +1,17 @@
+projectnamespace: coffeeshop-deploy
+
+kafka:
+  bootstrap:
+    service: coffeeshop-kafka-kafka-bootstrap.coffeeshop-kafka.svc.cluster.local
+    port: 9092
+
+image_pull_policy: Always
+images:
+  barista_node: image-registry.openshift-image-registry.svc:5000/coffeeshop-build/barista-node:latest
+  coffeeshop_service: image-registry.openshift-image-registry.svc:5000/coffeeshop-build/coffeeshop-service:latest
+
+replica_count:
+  coffeeshop_service: 1
+
+  # QUEST-CODE-HINT [FIXME]: 1 replica in development, but we should have at least 10 barista_node replicas in production.
+  barista_node: 1

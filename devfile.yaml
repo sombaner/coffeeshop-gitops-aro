@@ -1,0 +1,10 @@
+schemaVersion: 2.2.0
+metadata:
+  generateName: coffeeshop-gitops
+projects:
+  - name: coffeeshop-gitops
+    git:
+      remotes:
+        origin: "https://infra-gitea-infra-gitea-repositories.apps.rosa.rosa-tzwdf.undf.p3.openshiftapps.com/gameday/coffeeshop-gitops.git"
+      checkoutFrom:
+        revision: main

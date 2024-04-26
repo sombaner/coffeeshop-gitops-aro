@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: coffeeshop-deploy
+  namespace: openshift-gitops
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: coffeeshop-deploy
+
+  source:
+    repoURL: https://infra-gitea-infra-gitea-repositories.apps.rosa.rosa-tzwdf.undf.p3.openshiftapps.com/gameday/coffeeshop-gitops.git
+    targetRevision: main
+    path: deploy/charts/app
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: coffeeshop-deploy
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+  sync:
+    wave: 30

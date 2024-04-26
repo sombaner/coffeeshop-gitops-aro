@@ -1,0 +1,7 @@
+projectnamespace: coffeeshop-kafka
+
+partition_count: 15
+
+port:
+  internal: 9092
+  tls: 9093

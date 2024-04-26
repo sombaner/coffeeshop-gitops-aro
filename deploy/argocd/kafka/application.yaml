@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: coffeeshop-kafka
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: coffeeshop-kafka
+
+  source:
+    repoURL: https://github.com/aws-redhat-gameday/coffeeshop-gitops.git
+    targetRevision: main
+    path: deploy/charts/kafka
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: coffeeshop-kafka
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+  sync:
+    wave: 30

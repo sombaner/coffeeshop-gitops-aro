@@ -1,0 +1,29 @@
+# PipelineRun resources are excluded by default in ArgoCD
+# See kubectl edit configmap argocd-cm -n openshift-gitops
+# See https://issues.redhat.com/browse/GITOPS-1876
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: barista-node-pipelinerun
+  namespace: coffeeshop-build
+spec:
+  pipelineRef:
+    name: build-and-push-barista-node
+  workspaces:
+    - name: maven-settings
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi
+    - name: shared-workspace
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 500Mi
+  serviceAccountName: pipeline

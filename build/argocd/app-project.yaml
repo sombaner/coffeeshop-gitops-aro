@@ -1,0 +1,26 @@
+kind: AppProject
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: coffeeshop-build
+  namespace: openshift-gitops
+spec:
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  destinations:
+    - namespace: "coffeeshop-build"
+      server: "*"
+  sourceRepos:
+    - "*"
+  roles:
+    - description: Readonly AWS developer group
+      groups:
+        - awsdeveloper
+      name: awsdeveloper
+      policies:
+        - >-
+          p, proj:coffeeshop-build:awsdeveloper, applications, *,
+          coffeeshop-build/*, deny
+        - >-
+          p, proj:coffeeshop-build:awsdeveloper, applications, get,
+          coffeeshop-build/*, allow

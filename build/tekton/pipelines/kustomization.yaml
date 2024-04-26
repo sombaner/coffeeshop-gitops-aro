@@ -1,0 +1,11 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: coffeeshop-build
+
+resources:
+  - task-gitclone.yaml
+  - task-maven.yaml
+  - pipeline-barista-node.yaml
+  - pipeline-coffeeshop-service.yaml
+

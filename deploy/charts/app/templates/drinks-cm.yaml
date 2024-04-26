@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: drink-list-cm
+  annotations:
+      argocd.argoproj.io/sync-wave: "2"
+data:
+  drinks: |
+    ROSA Frappuccino
+    Chai API
+    Serverless Hot Chocolate
+    Latte Deploy-o
+    Prod. Release Espresso - Double-shot
+    Gitea Green Build
+    Mocha Container Sip

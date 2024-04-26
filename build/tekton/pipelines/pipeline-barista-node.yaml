@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-push-barista-node
+  labels:
+    app: barista-node
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  params:
+    - default: latest
+      description: Image Tag Value
+      name: IMAGE_TAG
+      type: string
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: https://infra-gitea-infra-gitea-repositories.apps.rosa.rosa-tzwdf.undf.p3.openshiftapps.com/gameday/coffeeshop-app.git
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+      taskRef:
+        kind: Task
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: build-image
+      params:
+        - name: CONTEXT
+          value: barista-node
+        - name: DOCKERFILE
+          value: barista-node/Dockerfile
+        - name: IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/coffeeshop-build/barista-node:$(params.IMAGE_TAG)
+        - name: TLSVERIFY
+          value: "false"
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace

@@ -1,0 +1,26 @@
+kind: AppProject
+apiVersion: argoproj.io/v1alpha1
+metadata:
+  name: coffeeshop-kafka
+  namespace: openshift-gitops
+spec:
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  destinations:
+    - namespace: "coffeeshop-kafka"
+      server: "*"
+  sourceRepos:
+    - "*"
+  roles:
+    - description: AWS developer admin group
+      groups:
+        - awsdeveloper
+      name: awsdeveloper
+      policies:
+        - >-
+          p, proj:coffeeshop-kafka:awsdeveloper, applications, *,
+          coffeeshop-kafka/*, deny
+        - >-
+          p, proj:coffeeshop-kafka:awsdeveloper, applications, get,
+          coffeeshop-kafka/*, allow

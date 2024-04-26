@@ -1,0 +1,84 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coffeeshop-service
+  labels:
+    app: coffeeshop-service
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+  annotations:
+      argocd.argoproj.io/sync-wave: "1"
+spec:
+  replicas: {{ .Values.replica_count.coffeeshop_service }}
+  selector:
+    matchLabels:
+      app: coffeeshop-service
+  template:
+    metadata:
+      name: coffeeshop-service-deployment
+      labels:
+        app:  coffeeshop-service
+        release: {{ .Release.Name }}
+        app.kubernetes.io/component: coffeeshop-service
+        app.kubernetes.io/instance: coffeeshop-service
+        app.kubernetes.io/part-of: coffeeshop
+    spec:
+      containers:
+        - name: coffeeshop-service
+          image: {{ .Values.images.coffeeshop_service}}
+          imagePullPolicy: {{ .Values.image_pull_policy }}
+{{- if .Values.securityContext }}
+          securityContext:
+{{ toYaml .Values.securityContext | indent 12 }}
+{{- end }}
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "{{ .Values.kafka.bootstrap.service }}:{{ .Values.kafka.bootstrap.port }}"
+            - name: QUARKUS_HTTP_PORT
+              value: "8080"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: barista-node
+  labels:
+    app: barista-node
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: {{ .Values.replica_count.barista_node }}
+  selector:
+    matchLabels:
+      app: barista-node
+  template:
+    metadata:
+      name: barista-node-deployment
+      labels:
+        app:  barista-node
+        release: {{ .Release.Name }}
+        app.kubernetes.io/component: barista-node
+        app.kubernetes.io/instance: barista-node
+        app.kubernetes.io/part-of: coffeeshop
+    spec:
+      containers:
+        - name: barista-node
+          image: {{ .Values.images.barista_node }}
+          imagePullPolicy: {{ .Values.image_pull_policy }}
+{{- if .Values.securityContext }}
+          securityContext:
+{{ toYaml .Values.securityContext | indent 12 }}
+{{- end }}
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "{{ .Values.kafka.bootstrap.service }}:{{ .Values.kafka.bootstrap.port }}"
+            - name: QUARKUS_HTTP_PORT
+              value: "8080"

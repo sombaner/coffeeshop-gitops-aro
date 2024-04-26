@@ -1,0 +1,20 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: coffeeshop-service
+  labels:
+    app: coffeeshop-service
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+  annotations:
+      argocd.argoproj.io/sync-wave: "1"
+spec:
+  path: /
+  to:
+    kind: Service
+    name: coffeeshop-service
+    weight: 100
+  port:
+    targetPort: 8080-tcp
+  tls:
+    termination: edge
